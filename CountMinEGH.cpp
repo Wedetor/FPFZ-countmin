@@ -95,29 +95,31 @@ int primesSum(set<int64_t> primes, int primeIndex){
 
 // ======== v Filter factory v ==============================
 
-void filterInsert(map<int, vector<bool>> &filter, int elementToInsert, set<int64_t> primes, int primeIndex, int m){
-    vector<bool> bitVector;
-    bitVector.resize(m);
-    int currentSumIndex = 0;
-    int topSumIndex = 0;
-    int offset;
+void filterBuild(map<int, vector<bool>> &filter, set<int64_t> primes, int primeIndex, int n, int m){
+    for(int i = 1; i <= n; i++){
+        vector<bool> bitVector;
+        bitVector.resize(m);
+        int currentSumIndex = 0;
+        int topSumIndex = 0;
+        int offset;
 
-    for(auto prime: primes){
-        offset = 0;
-        currentSumIndex = 0;
+        for(auto prime: primes){
+            offset = 0;
+            currentSumIndex = 0;
 
-        for(auto primeSum: primes){
-            if(currentSumIndex == topSumIndex)
-                break;
-            offset += primeSum;
-            currentSumIndex++;
+            for(auto primeSum: primes){
+                if(currentSumIndex == topSumIndex)
+                    break;
+                offset += primeSum;
+                currentSumIndex++;
+            }
+
+            bitVector[(i % prime) + offset] = 1;
+            topSumIndex++;
         }
 
-        bitVector[(elementToInsert % prime) + offset] = 1;
-        topSumIndex++;
+        filter.insert(pair<int, vector<bool>>(i, bitVector));
     }
-
-    filter.insert(pair<int, vector<bool>>(elementToInsert, bitVector));
 }
 
 void filterPrint(map<int, vector<bool>> filter){
@@ -163,16 +165,14 @@ int main(){
     cout << "Maximal set size for FPFZ (d): ";
     cin >> d;
 
-    sketchCountMin.resize(n);
-
     set<int64_t> primes = primesMultiplied(pow(n, d), primeIndex);
     m = primesSum(primes, primeIndex);
 
+    sketchCountMin.resize(m);
+
     map<int, vector<bool>> filter;
 
-    for(int i = 1; i <= n; i++){
-        filterInsert(filter, i, primes, primeIndex, m);
-    }
+    filterBuild(filter, primes, primeIndex, n, m);
 
     filterPrint(filter);
 
