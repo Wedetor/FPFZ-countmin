@@ -9,12 +9,16 @@
 #include "Filters/CountMinEGH.cpp"
 #include "Filters/CountMinOLS.cpp"
 #include "Filters/CountMinPOL.cpp"
+#include "CountMinBase.cpp"
 
 using namespace std;
 
 EGHFilter egh = EGHFilter(0, 0);
 OLSFilter ols = OLSFilter(0, 0);
 POLFilter pol = POLFilter(0, 0);
+BaseCountMin base = BaseCountMin(false);
+
+vector< vector<int> > baseSketchCountMin;
 vector<int> sketchCountMin;
 vector<bool> bitVector;
 
@@ -37,17 +41,20 @@ int main(){
         }
 
         if(filterType == "BASE" || filterType == "base"){
-            /*cout << "Number of elements (n): ";
-            cin >> n;
-            cout << "Maximal set size for FPFZ (d): ";
-            cin >> d;
-            cout << endl;
 
-            egh = EGHFilter(n, d);
-            sketchCountMin.resize(egh.getSketchSize());
-            filterTypeSwitch = 0;*/  
+            n = INT_MAX;
+
+            base = BaseCountMin(true);
+            baseSketchCountMin.resize(base.getSketchRows());
+            for(int i = 0; i < baseSketchCountMin.size(); i++){
+                baseSketchCountMin[i].resize(base.getSketchColumns());
+            }
+            filterTypeSwitch = 0;
+
         }
+
         if(filterType == "EGH" || filterType == "egh"){
+
             cout << "Number of elements (n): ";
             cin >> n;
             cout << "Maximal set size for FPFZ (d): ";
@@ -56,9 +63,12 @@ int main(){
 
             egh = EGHFilter(n, d);
             sketchCountMin.resize(egh.getSketchSize());
-            filterTypeSwitch = 1;          
+            filterTypeSwitch = 1;       
+
         }
+
         if(filterType == "OLS" || filterType == "ols"){
+
             cout << "Number of elements (n): ";
             cin >> n;
             cout << "Maximal set size for FPFZ (d): ";
@@ -67,9 +77,12 @@ int main(){
 
             ols = OLSFilter(n, d);
             sketchCountMin.resize(ols.getSketchSize());
-            filterTypeSwitch = 2;         
+            filterTypeSwitch = 2;       
+
         }
+
         if(filterType == "POL" || filterType == "pol"){
+            
             cout << "Number of elements (n): ";
             cin >> n;
             cout << "Maximal set size for FPFZ (d): ";
@@ -86,6 +99,15 @@ int main(){
             cin >> input;
             if(input == "print" || input == "PRINT"){
                 switch (filterTypeSwitch) {
+                    case 0:
+                        for(int i = 0; i < baseSketchCountMin.size(); i++){
+                            for(int j = 0; j < baseSketchCountMin[i].size(); j++){
+                                cout << baseSketchCountMin[i][j] << " ";
+                            }
+                            cout << endl;
+                        }
+                        break;
+
                     case 1:
                         egh.filterPrint();
                         break;
@@ -113,6 +135,10 @@ int main(){
                 }
                 
                 switch (filterTypeSwitch) {
+                    case 0:
+                        base.insertElement(baseSketchCountMin, elementToInsert);
+                        break;
+
                     case 1:
                         bitVector = egh.getFilteredValue(elementToInsert);
                         break;
@@ -129,13 +155,18 @@ int main(){
                         break;
                 }
 
-                for(int i = 0; i < bitVector.size(); i++){
-                    if(bitVector[i]){
-                        sketchCountMin[i]++;
+                if(filterTypeSwitch == 0){
+                    continue;
+                } else {
+                    for(int i = 0; i < bitVector.size(); i++){
+                        if(bitVector[i]){
+                            sketchCountMin[i]++;
+                        }
                     }
-                }
 
-                continue;
+                    continue;
+                }
+                
             }
             if(input == "query" || input == "QUERY"){
                 int elementToSearch;
@@ -148,6 +179,10 @@ int main(){
                 } else {
 
                     switch (filterTypeSwitch) {
+                        case 0:
+                            cout << elementToSearch << " was found " << base.queryElement(baseSketchCountMin, elementToSearch) << " times. \n";
+                            break;
+
                         case 1:
                             bitVector = egh.getFilteredValue(elementToSearch);
                             break;
@@ -163,30 +198,35 @@ int main(){
                         default:
                             break;
                     }
-                    
 
-                    unsigned int minCounter = UINT32_MAX;
-                    bool notFound = false;
+                    if(filterTypeSwitch == 0){
+                        continue;
+                    } else {
 
-                    for(int i = 0; i < bitVector.size(); i++){
-                        if(bitVector[i]){
-                            if(sketchCountMin[i] == 0){
-                                cout << "Element not in sketch." << endl;
-                                notFound = true;
-                                break;
-                            } else {
-                                if(sketchCountMin[i] < minCounter){
-                                    minCounter = sketchCountMin[i];
+                        unsigned int minCounter = UINT32_MAX;
+                        bool notFound = false;
+
+                        for(int i = 0; i < bitVector.size(); i++){
+                            if(bitVector[i]){
+                                if(sketchCountMin[i] == 0){
+                                    cout << "Element not in sketch." << endl;
+                                    notFound = true;
+                                    break;
+                                } else {
+                                    if(sketchCountMin[i] < minCounter){
+                                        minCounter = sketchCountMin[i];
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    if(!notFound){
-                        cout << elementToSearch << " was found " << minCounter << " times. \n";
-                    }
+                        if(!notFound){
+                            cout << elementToSearch << " was found " << minCounter << " times. \n";
+                        }
 
-                    continue;
+                        continue;
+
+                    }       
                 }
             }
             if(input == "exit" || input == "EXIT"){
