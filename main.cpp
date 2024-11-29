@@ -94,6 +94,12 @@ int main(){
             filterTypeSwitch = 3;
         }
 
+        cout << "What would you like to do?" << endl;
+        cout << "\t PRINT - Print the filter currently in use. \n"
+                "\t INSERT - Insert an element into the Count Min sketch using this filter. \n"
+                "\t QUERY - Ask if an element is inside the Count Min sketch, and if so, its frecency. \n"
+                "\t EXIT - Leave this section and try other filters." << endl;
+
         while(filterTypeSwitch > -1 && filterTypeSwitch < 4){
             
             cin >> input;
