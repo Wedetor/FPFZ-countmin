@@ -1,0 +1,43 @@
+16885952 -> 3271665856 frequency 402
+3271665856 -> 16885952 frequency 270
+3271665856 -> 3189665748 frequency 26
+3189665748 -> 3271665856 frequency 14
+3271665856 -> 1708842329 frequency 26
+1708842329 -> 3271665856 frequency 12
+3271665856 -> 1362142566 frequency 1876
+1362142566 -> 3271665856 frequency 1866
+3271665856 -> 3167935833 frequency 26
+3167935833 -> 3271665856 frequency 25
+3271665856 -> 2067267845 frequency 26
+2067267845 -> 3271665856 frequency 12
+3271665856 -> 592060191 frequency 24
+592060191 -> 3271665856 frequency 12
+3271665856 -> 553517649 frequency 24
+553517649 -> 3271665856 frequency 24
+3271665856 -> 3459305028 frequency 63882756
+3271665856 -> 2736616103 frequency 385420
+3271665856 -> 3378752429 frequency 1124406
+3271665856 -> 1703340868 frequency 7654260
+ ->  frequency 0
+ ->  frequency 0
+ ->  frequency 0
+ ->  frequency 0
+ ->  frequency 0
+ ->  frequency 0
+ ->  frequency 0
+ ->  frequency 0
+ ->  frequency 0
+ ->  frequency 0
+ ->  frequency 0
+ ->  frequency 0
+ ->  frequency 0
+ ->  frequency 0
+ ->  frequency 0
+ ->  frequency 0
+ ->  frequency 0
+ ->  frequency 0
+ ->  frequency 0
+Time Limit Exceded = 1
+it took 7200 to finish.
+The size of the filter is: 0.0117188 KB
+The size of the sketch is: 0.0234375 KB

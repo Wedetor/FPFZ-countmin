@@ -8,7 +8,6 @@
 #include <time.h>
 #include <fstream>
 #include <string>
-#include "../Filters/CountMinEGH.cpp"
 
 using namespace std;
 
@@ -25,7 +24,7 @@ int main(){
 
     string input;
 
-    ifstream test("chicago2016_withdata.txt");
+    ifstream test("CTU-IoT-Malware-Capture-60-1_all.txt");
 
     while (getline(test, input)) {
         spaceCounter = 0;
@@ -64,7 +63,7 @@ int main(){
 
     cout << "Map done, making real Frequency" << endl;
 
-    ofstream realFrequencyFile("chicago2016_Real_Frequency_Direction.txt");
+    ofstream realFrequencyFile("CTU-60-1_Real_Frequency.txt");
 
     realFrequencyFile << "Size of realFrequency Map: " << (float)sizeof(realFrequency) / (float)1024 << " KB." << endl;
 

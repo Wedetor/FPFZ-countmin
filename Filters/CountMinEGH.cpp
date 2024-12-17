@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <string>
 #include <map>
 #include <vector>
 #include <cmath>
@@ -10,7 +11,7 @@
 
 using namespace std;
 
-struct EGHFilter {
+class EGHFilter {
 
     // n = Number of elements.
     // d = Maximal set size for FPFZ.
@@ -21,165 +22,199 @@ struct EGHFilter {
     // 
     // m = Sum of the k primes chosen.
 
-    int n;
-    int d;
-    set<int64_t> primes;
-    int primeIndex;
-    int m = 0;
-    map<int, vector<bool>> filter;
-
-    // ======== v Prime factory v ===============================
-
-    set<int64_t> primeCalculator(long long numberToCompare){
-        vector<bool> is_prime(numberToCompare + 1, true);
+    private :
+        unsigned int n;
+        unsigned int d;
         set<int64_t> primes;
-        is_prime[0] = is_prime[1] = false;
-        int64_t p, pp, q, x;
+        unsigned int primeIndex;
+        unsigned int m = 0;
+        map<unsigned int, vector<bool>> filter;
 
-        primes.insert(2);
-        for (q = 4; q < is_prime.size(); q += 2)
-            is_prime[q] = false;
-        primes.insert(3);
-        for (q = 9; q < is_prime.size(); q += 3)
-            is_prime[q] = false;
-
-        for (p = 5; p < is_prime.size(); p += 6) {
-            if (is_prime[p]) {
-                primes.insert(p);
-                for (q = p * p; q < is_prime.size(); q += p)
-                    is_prime[q] = false;
+        string strMultiply(string nums1, string nums2) {
+            unsigned int n = nums1.size();
+            unsigned int m = nums2.size();
+            string ans(n + m, '0');
+            for(int i = n - 1; i >= 0; i--) {
+                for(int j = m - 1; j >= 0; j--) {
+                    unsigned int p = (nums1[i] - '0') * (nums2[j] - '0') + (ans[i + j + 1] - '0');
+                    ans[i+j+1] = p % 10 + '0';
+                    ans[i+j] += p / 10;
             }
-
-            pp = p + 2;
-            if (is_prime[pp]) {
-                primes.insert(pp);
-                for (q = pp * pp; q < is_prime.size(); q += pp)
-                    is_prime[q] = false;
             }
+            for(unsigned int i = 0; i < m + n; i++) {
+                if(ans[i] !='0') return ans.substr(i);
+            }
+            return "0";
         }
 
-        return primes;
-    }
+        string strPower(string base, unsigned int power) {
+            if(power == 0)
+                return "1";
 
-    set<int64_t> primesMultiplied(long long numberToCompare, int &primeIndex){
-        set<int64_t> possibleAnswer;
-        set<int64_t> answer;
-        int possibleSize = 10;
-        int index;
-        long long currentProduct;
-        bool complete = false;
-
-        while(!complete){
-            possibleAnswer = primeCalculator(possibleSize);
-            index = 0;
-            currentProduct = 1;
-            for(auto prime: possibleAnswer){
-                currentProduct *= prime;
-                index++;
-                if(currentProduct >= numberToCompare){
-                    complete = true;
-                    break;
-                }
-            }
-
+            if(power == 1)
+                return base;
             
-            if(complete){
-                primeIndex = index;
-                return possibleAnswer;
+            string powAns = strMultiply(base, base);
+            
+            for(unsigned int i = 3; i < power; i++){
+                powAns = strMultiply(powAns, base);
             }
 
-            possibleSize *= 2;
+            return powAns;
         }
 
-        cout << "Something went wrong" << endl;
-        return possibleAnswer;
-    }
+        // ======== v Prime factory v ===============================
 
-    int primesSum(set<int64_t> primes, int primeIndex){
-        int sum = 0;
+        set<int64_t> primeCalculator(long long maxPrime){
+            vector<bool> is_prime(maxPrime + 1, true);
+            set<int64_t> primes;
+            is_prime[0] = is_prime[1] = false;
+            int64_t p, pp, q, x;
 
-        for(auto prime : primes){
-            sum += prime;
-            primeIndex--;
-            if(primeIndex < 0) 
-                break;
-        }
+            primes.insert(2);
+            for (q = 4; q < is_prime.size(); q += 2)
+                is_prime[q] = false;
+            primes.insert(3);
+            for (q = 9; q < is_prime.size(); q += 3)
+                is_prime[q] = false;
 
-        return sum;
-    }
-
-    // ======== ^ Prime factory ^ ===============================
-
-    // ======== v Filter factory v ==============================
-
-    void filterBuild(map<int, vector<bool>> &filter, set<int64_t> primes, int primeIndex, int n, int m){
-        for(int i = 1; i <= n; i++){
-            vector<bool> bitVector;
-            bitVector.resize(m);
-            int currentSumIndex = 0;
-            int topSumIndex = 0;
-            int offset;
-
-            for(auto prime: primes){
-                offset = 0;
-                currentSumIndex = 0;
-
-                for(auto primeSum: primes){
-                    if(currentSumIndex == topSumIndex)
-                        break;
-                    offset += primeSum;
-                    currentSumIndex++;
+            for (p = 5; p < is_prime.size(); p += 6) {
+                if (is_prime[p]) {
+                    primes.insert(p);
+                    for (q = p * p; q < is_prime.size(); q += p)
+                        is_prime[q] = false;
                 }
 
-                bitVector[(i % prime) + offset] = 1;
-                topSumIndex++;
+                pp = p + 2;
+                if (is_prime[pp]) {
+                    primes.insert(pp);
+                    for (q = pp * pp; q < is_prime.size(); q += pp)
+                        is_prime[q] = false;
+                }
             }
 
-            filter.insert(pair<int, vector<bool>>(i, bitVector));
+            return primes;
         }
-    }
 
-    void filterPrint(){
-        map<int, vector<bool>>::iterator it;
+        set<int64_t> primesMultiplied(string numberToCompare, unsigned int &primeIndex){
+            set<int64_t> possibleAnswer;
+            long long possibleMax = 10;
+            unsigned int index;
+            string currentProduct;
+            bool complete = false;
 
-        cout << "============EGH===============" << endl;
-        for(it = this->filter.begin(); it != this->filter.end(); it++){
-            cout << it->first << " ";
-            if(it->first < 10)
-                cout << " ";
+            while(!complete){
+                possibleAnswer = primeCalculator(possibleMax);
+                index = 0;
+                currentProduct = "1";
+                for(auto prime: possibleAnswer){
+                    currentProduct = strMultiply(currentProduct, to_string(prime));
+                    index++;
+                    if(currentProduct.size() >= numberToCompare.size() && currentProduct.compare(numberToCompare) >= 0){
+                        complete = true;
+                        break;
+                    }
+                }
 
-            for(int i = 0; i < (it->second).size(); i++){
-                cout << (it->second)[i] << " ";
+                if(complete){
+                    primeIndex = index;
+                    return possibleAnswer;
+                }
+
+                possibleMax *= 2;
             }
 
-            cout << endl;
+            cout << "Something went wrong" << endl;
+            return possibleAnswer;
         }
 
-        cout << "===============================" << endl;
-    }
+        unsigned int primesSum(set<int64_t> primes, unsigned int primeIndex){
+            unsigned long long sum = 0;
 
-    // ======== ^ Filter factory ^ ==============================
+            for(auto prime : primes){
+                sum += prime;
+                primeIndex--;
+                if(primeIndex < 0) 
+                    break;
+            }
 
-    EGHFilter(int numberOfElements, int maximalSetSize){
-        this->n = numberOfElements;
-        this->d = maximalSetSize;
+            return sum;
+        }
 
-        this->primes = primesMultiplied(pow(this->n, this->d), this->primeIndex);
-        this->m = primesSum(this->primes, this->primeIndex);
+        // ======== ^ Prime factory ^ ===============================
 
-        filterBuild(this->filter, this->primes, this->primeIndex, this->n, this->m);
-    }
+        // ======== v Filter factory v ==============================
 
-    map<int, vector<bool>> getFilter(){
-        return this->filter;
-    }
+        void filterBuild(map<unsigned int, vector<bool>> &filter){
+            for(int i = 1; i <= n; i++){
+                vector<bool> bitVector;
+                bitVector.resize(m);
+                unsigned int currentSumIndex = 0;
+                unsigned int topSumIndex = 0;
+                unsigned int offset;
 
-    int getSketchSize(){
-        return this->m;
-    }
+                for(auto prime: primes){
+                    offset = 0;
+                    currentSumIndex = 0;
 
-    vector<bool> getFilteredValue(int i){
-        return this->filter[i];
-    }
+                    for(auto primeSum: primes){
+                        if(currentSumIndex == topSumIndex)
+                            break;
+                        offset += primeSum;
+                        currentSumIndex++;
+                    }
+
+                    bitVector[(i % prime) + offset] = 1;
+                    topSumIndex++;
+                }
+
+                filter.insert(pair<unsigned int, vector<bool>>(i, bitVector));
+            }
+        }
+
+        // ======== ^ Filter factory ^ ==============================
+
+    public:
+
+        void print(){
+            map<unsigned int, vector<bool>>::iterator it;
+
+            cout << "============EGH===============" << endl;
+            for(it = this->filter.begin(); it != this->filter.end(); it++){
+                cout << it->first << " ";
+                if(it->first < 10)
+                    cout << " ";
+
+                for(int i = 0; i < (it->second).size(); i++){
+                    cout << (it->second)[i] << " ";
+                }
+
+                cout << endl;
+            }
+
+            cout << "===============================" << endl;
+        }
+
+        EGHFilter(unsigned int numberOfElements, unsigned int maximalSetSize){
+            n = numberOfElements;
+            d = maximalSetSize;
+
+            primes = primesMultiplied(strPower(to_string(n), d), this->primeIndex);
+            m = primesSum(this->primes, this->primeIndex);
+
+            filterBuild(this->filter);
+        }
+
+        map<unsigned int, vector<bool>> getFilter(){
+            return filter;
+        }
+
+        int getSketchSize(){
+            return m;
+        }
+
+        vector<bool> getFilteredValue(unsigned int i){
+            return filter[i];
+        }
 
 };
